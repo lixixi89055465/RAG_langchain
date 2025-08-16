@@ -61,6 +61,7 @@ print(len(chunks))
 
 for i, _ in enumerate(chunks):
     print(f'chunk #{i} , size :{len(chunks[i])}')
+    print(chunks[i])
     print('-' * 100)
 
 text_splitter = RecursiveCharacterTextSplitter(
@@ -69,3 +70,58 @@ text_splitter = RecursiveCharacterTextSplitter(
     length_function=len
 )
 chunks = text_splitter.split_text(text)
+print('1' * 100)
+print(len(chunks))
+for i, _ in enumerate(chunks):
+    print(f'chunk #{i}, size:{len(chunks[i])}')
+    print(chunks[i])
+
+    print('-' * 100)
+
+# chunksize ==100
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=100,
+    chunk_overlap=0,
+    length_function=len,
+)
+chunks = text_splitter.split_text(text)
+print('2' * 100)
+for i, _ in enumerate(chunks):
+    print(f'chunk #{i}, size:{len(chunks[i])}')
+    print(chunks[i])
+    print('-' * 100)
+print(len(chunks))
+
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=100,
+    chunk_overlap=0,
+    length_function=len,
+    separators=['\n\n', '\n', '。', ''],
+    keep_separator=True,
+    is_separator_regex=True
+)
+chunks = text_splitter.split_text(text)
+print(len(chunks))
+print('2' * 100)
+for i, _ in enumerate(chunks):
+    print(f'chunk #{i}, size:{len(chunks[i])}')
+    print(chunks[i])
+    print('-' * 100)
+
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=100,
+    chunk_overlap=0,
+    length_function=len,
+    separators=['\n\n', '\n', '。', ''],
+    keep_separator=False,
+    is_separator_regex=True
+)
+chunks = text_splitter.split_text(text)
+print(len(chunks))
+print('3' * 100)
+for i, _ in enumerate(chunks):
+    print(f'chunk #{i}, size:{len(chunks[i])}')
+    print(chunks[i])
+    print('-' * 100)
