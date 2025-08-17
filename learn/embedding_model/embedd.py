@@ -37,9 +37,9 @@ embeddings_2d = tsne.fit_transform(embeddings)
 
 import matplotlib.pyplot as plt
 
-plt.rcParams['font.sans-serif'] = ['Kaitt', 'SimHei']
+# plt.rcParams['font.sans-serif'] = ['Kaitt', 'SimHei']
 
-plt.rcParams['axes.unicode_minus'] = False
+# plt.rcParams['axes.unicode_minus'] = False
 color_list = ['black'] * len(embeddings_2d[1:])
 color_list.insert(0, 'red')
 
@@ -49,23 +49,60 @@ for i in range(len(embeddings_2d)):
     plt.text(embeddings_2d[:, 0][i], embeddings_2d[:, 1][i] + 2, sentences[i], color=color_list[i])
 
 # 显示图表
-plt.savefig("embedding.png")
+plt.savefig("a.png")
 
 from transformers import GPT2TokenizerFast
 
 # tokenizer = GPT2TokenizerFast.from_pretrained('Xenova/text-embedding-ada-002')
-tokenizer = GPT2TokenizerFast.from_pretrained('/home/nanji/workspace/text-embedding-ada-002')
-print(tokenizer.encode('hello world'))
-assert tokenizer.encode('hello world') == [15339, 1917]
-tokenizer.generate("hello")
+# tokenizer = GPT2TokenizerFast.from_pretrained('/home/nanji/workspace/text-embedding-ada-002')
+# print(tokenizer.encode('hello world'))
+# assert tokenizer.encode('hello world') == [15339, 1917]
 
-# model = SentenceTransformer("/home/nanji/workspace/text-embedding-ada-002")
-# embeddings = tokenizer.encode(sentences)
-embeddings_openai = [tokenizer.encode(item) for item in sentences]
-print('2' * 100)
-print(embeddings_openai)
-embeddings_openai =np.array(embeddings_openai)
+# openai text-embedding-ada-002 embedding模型
+import openai
+import os
+
+# os.environ['OPENAI_API_KEY'] = 'hk-v3x5ll1000053052cb6ee2d41a9e5c4e0dbbb349026580e3'
+# os.environ['OPENAI_BASE_URL'] = 'https://api.openai-hk.com/v1'
+# openai.api_key = 'hk-v3x5ll1000053052cb6ee2d41a9e5c4e0dbbb349026580e3'
+# openai.base_url = 'https://api.openai-hk.com/v1'
+api_key = 'hk-mmev6910000530527a9f94143822e99529f31ccb11298092'
+base_url = 'https://api.openai-hk.com/v1'
+# response = openai.Embedding.create(
+#     input=sentences,
+#     model="text-embedding-ada-002",
+# )
+# embed_model = OllamaEmbeddings(
+#     model='nomic-embed-text',
+#     base_url="http://192.168.11.178:11434",
+#     # normalize=True
+# )
+from openai import OpenAI
+
+client = OpenAI(
+    base_url=base_url,
+    api_key=api_key
+)
+
+
+def embedding_text(text, model="text-embedding-ada-002"):
+    res = client.embeddings.create(input=text, model=model)
+    result = [data.embedding for data in res.data]
+    return np.array(result)
+
+
+embeddings_openai = embedding_text(sentences, "text-embedding-ada-002")
+
+
 tsne = TSNE(n_components=2, perplexity=5)
 embeddings_openai_2d = tsne.fit_transform(embeddings_openai)
 print(len(embeddings_openai))
 print(len(embeddings_openai[0]))
+plt.scatter(embeddings_openai_2d[:, 0], embeddings_openai_2d[:, 1], color=color_list)
+
+for i in range(len(embeddings_openai_2d)):
+    plt.text(embeddings_openai_2d[:, 0][i], embeddings_openai_2d[:, 1][i], sentences[i], color=color_list[i])
+
+# 显示图表
+print('5' * 100)
+plt.savefig('b.png')
