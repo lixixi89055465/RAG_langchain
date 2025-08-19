@@ -24,19 +24,34 @@ from transformers.generation.utils import GenerationConfig
 import torch
 from modelscope import snapshot_download, Model
 
-model_dir = snapshot_download("baichuan-inc/Baichuan2-7B-Chat", revision='master',
-                              # cache_dir='/home/nanji/workspace/Baichuan2-7B-Chat'
-                              cache_dir='/home/nanji/workspace'
-                              )
-# model = Model.from_pretrained("/home/nanji/workspace/Baichuan2-7B-Chat", device_map="auto", trust_remote_code=True, torch_dtype=torch.float16)
-model = Model.from_pretrained(model_dir,
-                              device_map="auto",
-                              # allow_remote=False,
-                              trust_remote_code=True,
-                              torch_dtype=torch.float16)
+# model_dir = snapshot_download("baichuan-inc/Baichuan2-7B-Chat", revision='master',
+#                               # cache_dir='/home/nanji/workspace/Baichuan2-7B-Chat'
+#                               cache_dir='/home/nanji/workspace'
+#                               )
+# # model = Model.from_pretrained("/home/nanji/workspace/Baichuan2-7B-Chat", device_map="auto", trust_remote_code=True, torch_dtype=torch.float16)
+# model = Model.from_pretrained(model_dir,
+#                               device_map="auto",
+#                               # allow_remote=False,
+#                               # trust_remote_code=True,
+#                               torch_dtype=torch.float16)
+
+import torch
+from modelscope import AutoModelForCausalLM, AutoTokenizer
+from transformers.generation.utils import GenerationConfig
+
+tokenizer = AutoTokenizer.from_pretrained("/home/nanji/workspace/baichuan-inc/Baichuan2-7B-Chat",
+                                          use_fast=False, trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained("/home/nanji/workspace/baichuan-inc/Baichuan2-7B-Chat",
+                                             device_map="auto", torch_dtype=torch.bfloat16, trust_remote_code=True)
+model.generation_config = GenerationConfig.from_pretrained("/home/nanji/workspace/baichuan-inc/Baichuan2-7B-Chat")
+# messages = []
+# messages.append({"role": "user", "content": "解释一下“温故而知新”"})
+# response = model.chat(tokenizer, messages)
+# print(response)
+
 messages = []
 messages.append({"role": "user", "content": "讲解一下“温故而知新”"})
-response = model(messages)
+response = model.chat(tokenizer, messages)
 print(response)
 print('2' * 100)
 content = '''Using the contexts below, answer the query.
@@ -68,5 +83,5 @@ messages.append({
     "role": "user",
     "content": content
 })
-response = model(messages)
+response = model.chat(tokenizer, messages)
 print(response)

@@ -14,11 +14,12 @@ conda install databases  -y
 进阶RAG检索 MultiQueryRetriever
 准备工作（加载数据、定义embedding模型、向量库）
 '''
+import warnings
+warnings.filterwarnings('ignore')
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders import PyPDFLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
-
 # load pdf
 loader = PyPDFLoader("../../data/baichuan.pdf")
 data = loader.load()
