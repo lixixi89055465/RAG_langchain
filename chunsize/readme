@@ -1,0 +1,1 @@
+modelscope download --model BAAI/bge-large-zh-v1.5  --local_dir ./bge-large-zh-v1.5
