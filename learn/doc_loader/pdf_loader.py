@@ -20,7 +20,9 @@ Langchain 可以使用文档加载器加载不同的文档类型，
 
 from langchain.document_loaders import PyPDFLoader
 
-loader = PyPDFLoader('/home/nanji/workspace/RAG_langchain/data/baichuan.pdf')
+# pdfPath = "D:\\workspace\\RAG_langchain\\data\\baichuan.pdf"
+pdfPath = "/home/nanji/workspace/RAG_langchain/data/baichuan.pdf"
+loader = PyPDFLoader(pdfPath)
 page_pypdf = loader.load()
 # print('0' * 100)
 # print(len(page_pypdf))
@@ -40,14 +42,9 @@ page_pypdf = loader.load()
 # 提取图片信息
 ## 提取图片信息
 # ! pip install rapidocr-onnxruntime
-loader = PyPDFLoader(
-    '/home/nanji/workspace/RAG_langchain/data/baichuan.pdf',
-    extract_images=True)
-
+# loader = PyPDFLoader('/home/nanji/workspace/RAG_langchain/data/baichuan.pdf', extract_images=True)
+loader = PyPDFLoader(pdfPath, extract_images=True)
 pages_pypdf_image = loader.load()
-# print('5' * 100)
-# print(pages_pypdf_image[2].page_content)
-
 # 使用 pyplumber 将pdf逐页进行解析，
 # 但是文本结构在分栏的时候存在混淆，解析不完全
 from langchain.document_loaders import PDFPlumberLoader
@@ -86,5 +83,5 @@ data_unstru = loader.load()
 loader = UnstructuredPDFLoader('/home/nanji/workspace/RAG_langchain/data/baichuan.pdf',
                                mode='elements')
 data_elements = loader.load()
-print('2'*100)
+print('2' * 100)
 print(data_elements)

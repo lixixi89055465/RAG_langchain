@@ -24,15 +24,18 @@ from langchain.chat_models import ChatOpenAI
 
 # from langchain_openai import ChatOpenAI
 
-base_url = "http://192.168.11.178:11434/v1"
+# base_url = "http://192.168.11.178:11434/v1"
+# base_url = "http://192.168.11.178:11434/v1"
+os.environ["OPENAI_API_KEY"] = "hk-xugtoe10000530527a34f7f365ce9f0c978ef7948929e14f"
+os.environ['OPENAI_BASE_URL'] = 'https://api.openai-hk.com/v1'
 
 chat = ChatOpenAI(
-    # openai_api_key=os.environ['OPENAI_API_KEY'],
-    base_url=base_url,
-    openai_api_key='empty',
-    # model='gpt-3.5-turbo'
+    openai_api_key=os.environ['OPENAI_API_KEY'],
+    # base_url=base_url,
+    # openai_api_key='empty',
+    model='gpt-3.5-turbo'
     # model='qwen2:latest',
-    model='chevalblanc/gpt-4o-mini:latest'
+    # model='chevalblanc/gpt-4o-mini:latest'
 )
 print(chat)
 
@@ -50,6 +53,7 @@ messages = [
     HumanMessage(content="Orange"),
 ]
 res = chat(messages)
+# res = chat.invoke(messages)
 print('1' * 100)
 print(res)
 messages.append(res)
@@ -204,7 +208,7 @@ embedding = SentenceTransformer(
 #     "/home/nanji/workspace/sentence-t5-large",
 #     local_files_only=True)
 
-vectorstore_hf = Chroma.from_documents(documents=docs, embedding=embedding.encode , collection_name="huggingface_embed")
+vectorstore_hf = Chroma.from_documents(documents=docs, embedding=embedding.encode, collection_name="huggingface_embed")
 
 result = vectorstore_hf.similarity_search(query, k=2)
 print('2' * 100)

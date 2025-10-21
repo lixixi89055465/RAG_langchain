@@ -113,6 +113,7 @@ from transformers import AutoTokenizer
 import pandas as pd
 
 Embedding_name = '/home/nanji/workspace/bge-large-zh-v1.5'
+# Embedding_name = 'D:/workspace/bge-large-zh-v1.5'
 # a = SentenceTransformer(Embedding_name).max_seq_length
 # print(a)
 
@@ -226,8 +227,102 @@ def cosine_similarity(vec1, vec2):
     norm_vec2 = np.linalg.norm(vec2)
     return dot_product / (norm_vec1 * norm_vec2)
 
+
 cosine_similarity(sentences[0]['combined_sentence_embedding'], sentences[1]['combined_sentence_embedding'])
+
 
 def calculate_cosine_distances(sentences):
     distances = []
+    for i in range(len(sentences) - 1):
+        embedding_current = sentences[i]['combined_sentence_embedding']
+        embedding_next = sentences[i + 1]['combined_sentence_embedding']
+        # calcuate cosine similarity
+        similarity = cosine_similarity(embedding_current, embedding_next)
+        # Convert to cosine distance
+        distance = 1 - similarity
+        distances.append(distance)
+        # Store distance in the dictionary
+        sentences[i]['distance_to_next'] = distance
+    return distances, sentences
 
+
+distances, sentences = calculate_cosine_distances(sentences)
+a = sentences[-2]['distance_to_next']
+print(a)
+import matplotlib.pyplot as plt
+
+plt.plot(distances)
+# 有很多方法可以基于这些距离来划分论文，但我打算将任何超过距离95百分位数的距离视为一个分割点。这是我们需要配置的唯一参数。
+import numpy as np
+
+plt.plot(distances)
+y_upper_bound = 0.15
+plt.ylim(0, y_upper_bound)
+plt.xlim(0, len(distances))
+# We need to get the distance threshold that we'll consider an outlier
+# We'll use numpy .percentile() for this
+breakpoint_percentile_threshold = 95
+
+breakpoint_distance_threshold = np.percentile(distances, breakpoint_percentile_threshold)
+plt.axhline(y=breakpoint_distance_threshold, color='r', linestyle='-')
+# Then we'll get the index of the distances that are above the threshold.
+# This will tell us where we should split our text
+indices_above_thresh = [i for i, x in enumerate(distances) if
+                        x > breakpoint_distance_threshold]  # The indices of those breakpoints on your list
+# Start of the shading and text
+colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
+
+for i, breakpoint_index in enumerate(indices_above_thresh):
+    start_index = 0 if i == 0 else indices_above_thresh[i - 1]
+    end_index = breakpoint_index if i <= len(indices_above_thresh) - 1 else len(distances)
+    plt.axvspan(start_index, end_index, facecolor=colors[i % len(colors)], alpha=0.25)
+    plt.text(x=np.average([start_index, end_index]),
+             y=breakpoint_distance_threshold + (y_upper_bound) / 20,
+             s=f"Chunk #{i}", horizontalalignment='center',
+             rotation='vertical')
+
+# # Additional step to shade from the last breakpoint to the end of the dataset
+# if indices_above_thresh:
+#     last_breakpoint = indices_above_thresh[-1]
+#     if last_breakpoint < len(distances):
+#         plt.axvspan(last_breakpoint, len(distances), facecolor=colors[len(indices_above_thresh) % len(colors)],
+#                     alpha=0.25)
+#         plt.text(x=np.average([last_breakpoint, len(distances)]),
+#                  y=breakpoint_distance_threshold + (y_upper_bound) / 20,
+#                  s=f"Chunk #{i + 1}",
+#                  rotation='vertical')
+# plt.title("Essay Chunks Based On Embedding Breakpoints")
+# plt.xlabel("Index of sentences in essay (Sentence Position)")
+# plt.ylabel("Cosine distance between sequential sentences")
+# plt.show()
+
+# Initialize the start index
+start_index = 0
+
+# Create a list to hold the grouped sentences
+chunks = []
+
+# Iterate through the breakpoints to slice the sentences
+
+for index in indices_above_thresh:
+    # The end index is the current breakpoint
+    end_index = index
+    # Slice the sentence_dicts from the current start index to the end index
+    group = sentences[start_index:end_index + 1]
+    combined_text = ' '.join([d['sentence'] for d in group])
+    chunks.append(combined_text)
+    # Update the start index for the next group
+    start_index = index + 1
+# The last group, if any sentences remain
+if start_index<len(sentences):
+    combined_text = ' '.join([d['sentence'] for d in sentences[start_index:]])
+    chunks.append(combined_text)
+
+# grouped_sentences now contains the chunked sentences
+for i, chunk in enumerate(chunks[:2]):
+    buffer = 200
+    print (f"Chunk #{i}")
+    print (chunk[:buffer].strip())
+    print ("...")
+    print (chunk[-buffer:].strip())
+    print ("\n")
