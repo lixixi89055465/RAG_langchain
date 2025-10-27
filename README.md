@@ -8,3 +8,9 @@
 1.[pdf_loader](https://github.com/blackinkkkxi/RAG_langchain/tree/main/learn/doc_loader)  
 2.[text_splitter](https://github.com/blackinkkkxi/RAG_langchain/tree/main/learn/text_splitter)  
 3.[embedding_model](https://github.com/blackinkkkxi/RAG_langchain/tree/main/learn/embedding_model)  
+
+pip install langchain==0.2.13
+pip install pi-heif
+pip install zhipuai Pyjwt  
+wget http://www.leptonica.org/source/leptonica-1.86.0.tar.gz
+sudo apt install libtool pkg-config -y
