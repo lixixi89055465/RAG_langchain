@@ -55,12 +55,12 @@ import os
 # 并通过诸如OCR、LLM和Markdown格式化等技术来增强解析效果。
 import getpass
 
-# os.environ["LLAMA_CLOUD_API_KEY"] = getpass.getpass()
-# from llama_parse import LlamaParse
-# import nest_asyncio
-#
-# nest_asyncio.apply()
-# documents = LlamaParse(result_type="markdown").load_data(file_path)
+os.environ["LLAMA_CLOUD_API_KEY"] = getpass.getpass()
+from llama_parse import LlamaParse
+import nest_asyncio
+
+nest_asyncio.apply()
+documents = LlamaParse(result_type="markdown").load_data(file_path)
 # print(documents[0].get_content())
 # 构建RAG系统
 # pip install langchain==0.2.13
@@ -101,15 +101,15 @@ from langchain.schema.output_parser import StrOutputParser
 from langchain.chat_models import ChatOpenAI
 
 llm = ChatOpenAI(model_name='gpt-4o', temperature=0)
-rag_chain = (
-        {'context': base_retriever, 'question': RunnablePassthrough()}
-        | prompt
-        | llm
-        | StrOutputParser()
-)
+# rag_chain = (
+#         {'context': base_retriever, 'question': RunnablePassthrough()}
+#         | prompt
+#         | llm
+#         | StrOutputParser()
+# )
 # r1 = rag_chain.invoke("2024财年第一季度的营业收入是多少？")
-r1 = rag_chain.invoke("2024财年第四季度的营业收入是多少？")
-print(r1)
+# r1 = rag_chain.invoke("2024财年第四季度的营业收入是多少？")
+# print(r1)
 # 根据提供的上下文，2024财年第一季度的营业收入没有被提到。因此，我不知道2024财年第一季度的营业收入是多少。
 
 ## OCR RAG 表现
@@ -130,3 +130,19 @@ print(r1)
 #     |StrOutputParser()
 # )
 # rag_chain.invoke("2024财年第一季度的营业收入是多少？")
+# IDP
+docs_idp = text_splitter.split_text(documents[0].get_content())
+vectorstore_idp = Chroma.from_texts(
+    docs_idp,
+    OpenAIEmbeddings(),
+    collection_name='pyparse_idp',
+)
+base_retriever_idp = vectorstore_idp.as_retriever(search_kwargs={'k': 3})
+rag_chain = (
+        {'context': base_retriever_idp, 'question': RunnablePassthrough()}
+        | prompt
+        | llm
+        | StrOutputParser()
+)
+r2 = rag_chain.invoke("2024财年第一季度的营业收入是多少？")
+print(r2)
