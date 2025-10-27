@@ -1,0 +1,4 @@
+python==2.12
+
+pip install httpx==0.27.2
+pip install openai==2.6.0

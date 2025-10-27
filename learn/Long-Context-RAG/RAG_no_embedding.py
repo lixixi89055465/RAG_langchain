@@ -22,7 +22,7 @@ import os
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 # Download nltk data if not already present
-nltk.download('punkt_tab')
+# nltk.download('punkt_tab')
 
 
 def load_document(pdf_path: str) -> str:
@@ -152,8 +152,10 @@ document_chunks = split_into_20_chunks(document_text, min_tokens=500)
 # %%
 from dotenv import load_dotenv
 import os
-
-os.environ['OPENAI_BASE_URL'] = 'https://api.openai-hk.com/v1'
+# /v1/chat/completions/responses
+# os.environ['OPENAI_BASE_URL'] = 'https://api.openai-hk.com/v1/chat/completions'
+# os.environ['OPENAI_BASE_URL'] = 'https://api.openai-hk.com/v1/chat/completions/responses'
+# os.environ['OPENAI_BASE_URL'] = 'http://192.168.11.178:11434'
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 print(api_key)
@@ -258,7 +260,8 @@ First think carefully about what information would help answer the question, the
     ]
 
     response = client.responses.create(
-        model="gpt-4.1-mini",
+        # model="gpt-4.1-mini",
+        model="gpt-4o",
         input=messages,
         tools=tools,
         tool_choice="required"
@@ -289,7 +292,9 @@ First think carefully about what information would help answer the question, the
                      "content": "Now, select the chunks that could contain information to answer the question. Return a JSON object with the list of chunk IDs."})
 
     response_chunks = client.responses.create(
-        model="gpt-4.1-mini",
+        # model="gpt-4.1-mini",
+        model="gpt-4o",
+
         input=messages,
         text=text_format
     )
@@ -453,7 +458,9 @@ Keep your answer clear, precise, and professional.
 
     # Call the model using structured output
     response = client.responses.parse(
-        model="gpt-4.1",
+        # model="gpt-4.1",
+        model="gpt-4o",
+
         input=[
             {"role": "system", "content": system_prompt.format(valid_citations_str=valid_citations_str)},
             {"role": "user",
@@ -528,7 +535,9 @@ def verify_answer(question: str, answer: LegalAnswer,
 Explain how well the content aligns with the source, and provide an assessment of completeness, precision, and relevance."""
 
     response = client.responses.parse(
-        model="o4-mini",
+        # model="o4-mini",
+        model="gpt-4o",
+
         input=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": f"""
