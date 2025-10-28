@@ -14,3 +14,5 @@ pip install pi-heif
 pip install zhipuai Pyjwt  
 wget http://www.leptonica.org/source/leptonica-1.86.0.tar.gz
 sudo apt install libtool pkg-config -y
+pip install langchain-experimental
+ pip reinstall unstructured
