@@ -5,8 +5,10 @@
 # @File : rag_glm.py
 # @Software: PyCharm
 # @Comment : pip reinstall unstructured
-
+import os
+os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 from langchain_community.document_loaders import UnstructuredPDFLoader
+os.environ["OCR_AGENT"] = "unstructured.partition.utils.ocr_models.paddle_ocr.OCRAgentPaddle"
 
 file_path = '../../data/GPU_Programming_Guide_Chinese.pdf'
 loader = UnstructuredPDFLoader(file_path)
@@ -21,7 +23,13 @@ all_splits = text_splitter.split_documents(data)
 from langchain_community.embeddings import HuggingFaceEmbeddings
 
 # embeddings = HuggingFaceEmbeddings(model_name='moka-ai/m3e-base')
-embeddings = HuggingFaceEmbeddings(model_name='/home/nanji/workspace/m3e-base')
+# embeddings = HuggingFaceEmbeddings(model_name='/home/nanji/workspace/m3e-base')
+# 本地加载
+embeddings = HuggingFaceEmbeddings(
+    cache_folder='/home/nanji/workspace/m3e-base',
+    model_name='moka-ai/m3e-base'
+)
+
 
 # 创建想粮库
 from langchain.vectorstores import Chroma
